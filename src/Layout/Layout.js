@@ -99,9 +99,10 @@ const Drawer = styled(MuiDrawer, {
 }));
 export const Layout = ({ children }) => {
   const { role } = useSelector((state) => state?.user?.user);
+  const { orders } = useSelector((state) => state?.orders);
   const dispatch = useDispatch();
-  console.log(role, "roleComing");
-  const [open, setOpen] = React.useState(true);
+  console.log(orders?.length, "roleComing");
+  const [open, setOpen] = React.useState(false);
   const toggleDrawer = () => {
     setOpen(!open);
   };
@@ -195,10 +196,15 @@ export const Layout = ({ children }) => {
                   sx={{ ...activeSideBarBackground(pathname, "/orders") }}
                 >
                   <ListItemIcon>
-                    <ShoppingCartIcon
-                      sx={{ ...activeSideBarColor(pathname, "/orders") }}
-                    />
+                    <CustomBadge
+                      badgeContent={orders?.length ? orders?.length : "0"}
+                    >
+                      <ShoppingCartIcon
+                        sx={{ ...activeSideBarColor(pathname, "/orders") }}
+                      />
+                    </CustomBadge>
                   </ListItemIcon>
+
                   <ListItemText primary="Orders" />
                 </ListItemButton>
               )}

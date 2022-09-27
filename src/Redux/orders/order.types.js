@@ -1,0 +1,2 @@
+export const SAVEORDER = "SAVEORDER";
+export const DELETEFROMCART = "DELETEFROMCART";

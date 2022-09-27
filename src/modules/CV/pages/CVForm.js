@@ -11,7 +11,7 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import * as Yup from "yup";
 import { useFormik, Form, FormikProvider, Field } from "formik";
-import { convertToBase64 } from "../../../utils/utils";
+import { convertToBase64, errorToast } from "../../../utils/utils";
 import { postReq } from "../../../Crud/Crud";
 import { UPLOAD_CV } from "../../../Crud/constsants";
 import { useSelector } from "react-redux";
@@ -43,7 +43,7 @@ export const CVform = () => {
     },
     validationSchema: SignupSchema,
 
-    onSubmit: async (values) => {
+    onSubmit: async (values, { resetForm }) => {
       console.log("Values of Form are", values);
       const { cvPdf } = values;
       const { name } = cvPdf;
@@ -57,7 +57,10 @@ export const CVform = () => {
         cvPdfName: trimmedName?.replace(/\s/g, ""),
         userId: userId,
       })
-        .then()
+        .then(() => {
+          resetForm();
+          document.getElementById("cvPdf").value = "";
+        })
         .catch();
     },
   });
@@ -69,6 +72,7 @@ export const CVform = () => {
     getFieldProps,
     handleChange,
     setFieldValue,
+    setFieldError,
   } = formik;
   let hasMount = true;
   return (
@@ -125,8 +129,14 @@ export const CVform = () => {
                         {(props) => (
                           <CustomInput
                             onChange={(e) => {
-                              handleChange(e);
-                              setFieldValue("cvPdf", e?.target.files[0]);
+                              if (e?.target.files[0]?.type?.includes("pdf")) {
+                                handleChange(e);
+                                console.log("reachingHereOK");
+                                setFieldValue("cvPdf", e?.target.files[0]);
+                              } else {
+                                e.target.value = "";
+                                errorToast("Only Pdf is allowed!");
+                              }
                             }}
                             fullWidth
                             id="cvPdf"
