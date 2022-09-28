@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Table,
   TableBody,
@@ -9,26 +9,18 @@ import {
   IconButton,
   Box,
   TableContainer,
-  Collapse,
-  Checkbox,
   Button,
   Zoom,
   MenuItem,
+  Tooltip,
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import SearchIcon from "@mui/icons-material/Search";
-
-import { FilterWorkers } from "./FilterWorkers";
+import { saveAs } from "file-saver";
 import { getReqWithParams } from "../../../../Crud/Crud";
 import { FILTERWORKERS } from "../../../../Crud/constsants";
-import {
-  capitalizeFirstLetter,
-  errorToast,
-  successToast,
-  workerTypeOptions,
-} from "../../../../utils/utils";
-import { btnStyles } from "../../../../Crud/styles";
+import { capitalizeFirstLetter } from "../../../../utils/utils";
+import DownloadForOfflineIcon from "@mui/icons-material/DownloadForOffline";
+import { btnStyles, primaryColor } from "../../../../Crud/styles";
 import { TableSuspenser } from "../../../common/components/TableSuspenser";
 import { CustomTableRow } from "../../../common/components/CustomTableRows";
 import { CustomTabelCell } from "../../../common/components/CustomTableCell";
@@ -112,7 +104,7 @@ export const WorkersList = () => {
                 {typeof workers === "object" &&
                   workers?.length &&
                   workers?.map((worker) => {
-                    const { experience, workerType, userId } = worker;
+                    const { experience, workerType, userId, cvUrl } = worker;
                     const { firstName, lastName } = userId;
                     return (
                       <Zoom
@@ -143,6 +135,19 @@ export const WorkersList = () => {
                               >
                                 Add to Cart
                               </Button>
+                              <Tooltip title="Download" arrow placement="top">
+                                <IconButton
+                                  onClick={() => {
+                                    let blob = new Blob([cvUrl], {
+                                      type: "application/pdf",
+                                    });
+                                    saveAs(blob);
+                                  }}
+                                  sx={{ ml: 2, color: primaryColor }}
+                                >
+                                  <DownloadForOfflineIcon />
+                                </IconButton>
+                              </Tooltip>
                             </TableCell>
                           )}
                         </CustomTableRow>
