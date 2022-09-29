@@ -81,6 +81,7 @@ const AdminDashBoard = () => {
 };
 export default function Dashboard() {
   const { role } = useSelector((state) => state?.user?.user);
+  console.log(role, "happened");
   const renderDashBoard = () => {
     if (role === "WORKER") {
       return <CVform />;

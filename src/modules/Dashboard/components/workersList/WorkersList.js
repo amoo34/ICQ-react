@@ -20,7 +20,11 @@ import { getReqWithParams } from "../../../../Crud/Crud";
 import { FILTERWORKERS } from "../../../../Crud/constsants";
 import { capitalizeFirstLetter } from "../../../../utils/utils";
 import DownloadForOfflineIcon from "@mui/icons-material/DownloadForOffline";
-import { btnStyles, primaryColor } from "../../../../Crud/styles";
+import {
+  btnStyles,
+  primaryColor,
+  secondaryColor,
+} from "../../../../Crud/styles";
 import { TableSuspenser } from "../../../common/components/TableSuspenser";
 import { CustomTableRow } from "../../../common/components/CustomTableRows";
 import { CustomTabelCell } from "../../../common/components/CustomTableCell";
@@ -96,7 +100,7 @@ export const WorkersList = () => {
                   <CustomTabelCell>Category</CustomTabelCell>
                   <CustomTabelCell>Experience</CustomTabelCell>
                   {role === "RECRUITER" && (
-                    <CustomTabelCell>Invitation</CustomTabelCell>
+                    <CustomTabelCell>Add To Cart</CustomTabelCell>
                   )}
                 </TableRow>
               </TableHead>
@@ -138,14 +142,16 @@ export const WorkersList = () => {
                               <Tooltip title="Download" arrow placement="top">
                                 <IconButton
                                   onClick={() => {
-                                    let blob = new Blob([cvUrl], {
-                                      type: "application/pdf",
-                                    });
-                                    saveAs(blob);
+                                    var a = document.createElement("a");
+                                    a.href = cvUrl;
+                                    a.setAttribute("download", "Cv.pdf");
+                                    a.click();
                                   }}
-                                  sx={{ ml: 2, color: primaryColor }}
+                                  sx={{ ml: 2, color: secondaryColor }}
                                 >
-                                  <DownloadForOfflineIcon />
+                                  <DownloadForOfflineIcon
+                                    sx={{ fontSize: "30px" }}
+                                  />
                                 </IconButton>
                               </Tooltip>
                             </TableCell>

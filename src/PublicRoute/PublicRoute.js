@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
-import { history } from "../utils/utils";
+import { Navigate } from "react-router-dom";
 
 export const PublicRoute = ({ children }) => {
   const user = useSelector((state) => state?.user?.user);
-  return !user ? children : history.push("/home");
+  return !user ? children : <Navigate to="/home" />;
 };

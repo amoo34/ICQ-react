@@ -10,82 +10,79 @@ import { CustomToastContainer } from "./modules/common/components/CustomToastCon
 import { ErrorPage } from "./ErrorPage/ErrorPage";
 import { RecruiterList } from "./modules/Recruiter/RecruiterList/RecruiterList";
 import { WorkersList } from "./modules/Dashboard/components/workersList/WorkersList";
-import { unstable_HistoryRouter as HistoryRouter } from "react-router-dom";
-import { history } from "./utils/utils";
+
 import { Orders } from "./modules/Orders/Orders";
 function App() {
   return (
-    <>
+    <div>
       <CustomToastContainer />
-      <HistoryRouter history={history}>
-        <Routes>
-          <Route
-            exact
-            path="/"
-            element={
-              <PublicRoute>
-                <Signin />
-              </PublicRoute>
-            }
-          />
-          <Route exact path="*" element={<ErrorPage />} />
-          <Route
-            exact
-            path="/signin"
-            element={
-              <PublicRoute>
-                <Signin />
-              </PublicRoute>
-            }
-          />
-          <Route
-            exact
-            path="/signup"
-            element={
-              <PublicRoute>
-                <SignUp />
-              </PublicRoute>
-            }
-          />
-          <Route
-            exact
-            path="/home"
-            element={
-              <PrivateRoute>
-                <Dashboard />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            exact
-            path="/orders"
-            element={
-              <PrivateRoute>
-                <Orders />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            exact
-            path="/Recruiters"
-            element={
-              <PrivateRoute>
-                <RecruiterList />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            exact
-            path="/Workers"
-            element={
-              <PrivateRoute>
-                <WorkersList />
-              </PrivateRoute>
-            }
-          />
-        </Routes>
-      </HistoryRouter>
-    </>
+      <Routes>
+        <Route
+          exact
+          path="/"
+          element={
+            <PublicRoute>
+              <Signin />
+            </PublicRoute>
+          }
+        />
+        <Route exact path="*" element={<ErrorPage />} />
+        <Route
+          exact
+          path="/signin"
+          element={
+            <PublicRoute>
+              <Signin />
+            </PublicRoute>
+          }
+        />
+        <Route
+          exact
+          path="/signup"
+          element={
+            <PublicRoute>
+              <SignUp />
+            </PublicRoute>
+          }
+        />
+        <Route
+          exact
+          path="/home"
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          exact
+          path="/orders"
+          element={
+            <PrivateRoute>
+              <Orders />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          exact
+          path="/Recruiters"
+          element={
+            <PrivateRoute>
+              <RecruiterList />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          exact
+          path="/Workers"
+          element={
+            <PrivateRoute>
+              <WorkersList />
+            </PrivateRoute>
+          }
+        />
+      </Routes>
+    </div>
   );
 }
 

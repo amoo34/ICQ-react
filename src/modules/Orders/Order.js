@@ -1,7 +1,7 @@
-import { Box, Grid, Button, Fade, Zoom } from "@mui/material";
+import { Box, Grid, Button, Zoom, Stack, Tooltip } from "@mui/material";
 import React from "react";
 import { useDispatch } from "react-redux";
-import { primaryColor, secondaryColor } from "../../Crud/styles";
+import Avatar from "@mui/material/Avatar";
 import { deleteFromCart } from "../../Redux/orders/order.actions";
 import { capitalizeFirstLetter } from "../../utils/utils";
 
@@ -22,26 +22,34 @@ export const Order = ({ order, index }) => {
       >
         <Grid container>
           <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
-            <Box>
-              {capitalizeFirstLetter(firstName) +
-                " " +
-                capitalizeFirstLetter(lastName)}
-            </Box>
-            <Box sx={{ color: "#7d7878", fontSize: "14px" }}>
+            <Stack direction="row">
+              <Box>
+                <Avatar />
+              </Box>
+              <Box sx={{ mt: 1, ml: 1 }}>
+                {capitalizeFirstLetter(firstName) +
+                  " " +
+                  capitalizeFirstLetter(lastName)}
+              </Box>
+            </Stack>
+
+            <Box sx={{ color: "#7d7878", fontSize: "14px", mt: 0.2 }}>
               {capitalizeFirstLetter(address)}
             </Box>
           </Grid>
           <Grid item xs={6} sm={6} md={6} lg={6} xl={6}>
             <Box sx={{ width: "100%", display: "flex", justifyContent: "end" }}>
-              <Button
-                color="error"
-                size="small"
-                variant="contained"
-                sx={{ textTransform: "none" }}
-                onClick={() => dispatch(deleteFromCart(order))}
-              >
-                Delete
-              </Button>
+              <Tooltip title="Delete From Cart!" arrow placement="top">
+                <Button
+                  color="error"
+                  size="small"
+                  variant="contained"
+                  sx={{ textTransform: "none", mt: 2 }}
+                  onClick={() => dispatch(deleteFromCart(order))}
+                >
+                  Delete
+                </Button>
+              </Tooltip>
             </Box>
           </Grid>
         </Grid>
