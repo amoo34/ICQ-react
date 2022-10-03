@@ -3,7 +3,7 @@ import { errorToast, successToast } from "../utils/utils";
 import { store } from "../Redux/store/store";
 export const axiosClient = axios.create();
 //
-const baseUrl = " http://ec2-3-144-196-218.us-east-2.compute.amazonaws.com/";
+const baseUrl = "http://ec2-3-144-196-218.us-east-2.compute.amazonaws.com/";
 
 axiosClient.defaults.baseURL = baseUrl;
 
