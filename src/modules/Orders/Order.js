@@ -1,10 +1,20 @@
-import { Box, Grid, Button, Zoom, Stack, Tooltip, Icon } from "@mui/material";
+import {
+  Box,
+  Grid,
+  Button,
+  Zoom,
+  Stack,
+  Tooltip,
+  Icon,
+  IconButton,
+} from "@mui/material";
 import React from "react";
 import { useDispatch } from "react-redux";
 import Avatar from "@mui/material/Avatar";
 import { deleteFromCart } from "../../Redux/orders/order.actions";
 import { capitalizeFirstLetter } from "../../utils/utils";
-import { btnStyles, primaryColorDark, secondaryColor } from "../../Crud/styles";
+import { btnStyles, secondaryColor } from "../../Crud/styles";
+import DownloadForOfflineIcon from "@mui/icons-material/DownloadForOffline";
 import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
 export const Order = ({ order, index, isCart }) => {
   const { firstName, lastName, address } = order?.userId;
@@ -61,11 +71,18 @@ export const Order = ({ order, index, isCart }) => {
                   </Button>
                 </Tooltip>
               ) : (
-                <Tooltip arrow title="Purchase!" placement="top">
-                  <Icon sx={{ mt: 5, color: secondaryColor }}>
-                    <ShoppingBasketIcon />
-                  </Icon>
-                </Tooltip>
+                <>
+                  <Tooltip arrow title="Purchased!" placement="top">
+                    <Icon sx={{ mt: 5, color: secondaryColor }}>
+                      <ShoppingBasketIcon />
+                    </Icon>
+                  </Tooltip>
+                  <Tooltip arrow title="Download!" placement="top">
+                    <IconButton sx={{ mt: 4.2, color: secondaryColor }}>
+                      <DownloadForOfflineIcon />
+                    </IconButton>
+                  </Tooltip>
+                </>
               )}
             </Box>
           </Grid>

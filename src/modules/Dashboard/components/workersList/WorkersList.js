@@ -6,15 +6,11 @@ import {
   TableHead,
   TableRow,
   Paper,
-  IconButton,
   Box,
   TableContainer,
   Button,
   Zoom,
   MenuItem,
-  Tooltip,
-  Grid,
-  TableFooter,
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material";
 
@@ -24,13 +20,8 @@ import {
   capitalizeFirstLetter,
   reduxValueChecker,
 } from "../../../../utils/utils";
-import DownloadForOfflineIcon from "@mui/icons-material/DownloadForOffline";
-import {
-  btnStyles,
-  primaryColorDark,
-  secondaryBtnStyles,
-  secondaryColor,
-} from "../../../../Crud/styles";
+
+import { btnStyles, secondaryBtnStyles } from "../../../../Crud/styles";
 import { TableSuspenser } from "../../../common/components/TableSuspenser";
 import { CustomTableRow } from "../../../common/components/CustomTableRows";
 import { CustomTabelCell } from "../../../common/components/CustomTableCell";
@@ -48,19 +39,15 @@ export const WorkersList = () => {
   const [pagination, setPagination] = useState({
     page: 1,
     recordsPerPage: 10,
-    filters: "",
+    filters: {},
   });
   const dispatch = useDispatch();
   const { role } = useSelector((state) => state?.user?.user);
   const { orders, paidOrders } = useSelector((state) => state?.orders);
   const filterWorkers = useCallback(() => {
-    let filtersObj = { filter: pagination?.filters };
-    console.log(
-      Object?.keys(filtersObj?.filter),
-      "filtersObj",
-      Object?.keys(filtersObj)
-    );
-    if (Object?.keys(filtersObj?.filter)?.length) {
+    let filtersObj = { ...pagination?.filters };
+    // console.log(filtersObj, "filtersObj", Object?.keys(filtersObj));
+    if (Object?.keys(filtersObj)?.length) {
       setWorkers("loading");
       getReqWithParams(
         FILTERWORKERS,
@@ -94,7 +81,10 @@ export const WorkersList = () => {
           <CustomInput
             value={pagination?.filters}
             onChange={(e) =>
-              setPagination((p) => ({ ...p, filters: e.target.value }))
+              setPagination((p) => ({
+                ...p,
+                filters: { workerType: e.target.value },
+              }))
             }
             fullWidth
             label="Select Worker Type"
@@ -107,7 +97,7 @@ export const WorkersList = () => {
       </Box>
 
       <Zoom
-        in={pagination?.filters}
+        in={Object?.keys(pagination?.filters)?.length}
         mountOnEnter
         unmountOnExit
         orientation="horizontal"

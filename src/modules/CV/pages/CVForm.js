@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -15,10 +15,7 @@ import { convertToBase64, errorToast } from "../../../utils/utils";
 import { postReq } from "../../../Crud/Crud";
 import { UPLOAD_CV } from "../../../Crud/constsants";
 import { useSelector } from "react-redux";
-import {
-  workerCategoryOptions,
-  workerExpOptions,
-} from "../../common/components/WorkerOptions";
+import { workerCategoryOptions } from "../../common/components/WorkerOptions";
 import { CustomInput } from "../../common/components/CustomInputField";
 import { Paper, Slide } from "@mui/material";
 import { btnStyles, secondaryColor } from "../../../Crud/styles";
@@ -45,6 +42,7 @@ export const CVform = () => {
       onAccept: () =>
         postReq(UPLOAD_CV, {
           ...valuesRef.current,
+          price: "10$",
         })
           .then(() => {
             setOpen(false);
@@ -57,14 +55,16 @@ export const CVform = () => {
   const { _id: userId } = user;
   const SignupSchema = Yup.object().shape({
     workerType: Yup.string().required("Worker Type is required"),
-    experience: Yup.string().required("Experience is required"),
+    firstName: Yup.string().required("First Name Type is required"),
+    lastName: Yup.string().required("Last Name  is required"),
     cvPdf: Yup.string().required("CV is required"),
   });
 
   const formik = useFormik({
     initialValues: {
       workerType: "",
-      experience: "",
+      firstName: "",
+      lastName: "",
       cvPdf: "",
     },
     validationSchema: SignupSchema,
@@ -123,6 +123,28 @@ export const CVform = () => {
                   <Grid container spacing={2}>
                     <Grid item xs={12} sm={6}>
                       <CustomInput
+                        fullWidth
+                        id="firstName"
+                        label="*First Name"
+                        name="firstName"
+                        {...getFieldProps("firstName")}
+                        error={Boolean(touched.firstName && errors.firstName)}
+                        helperText={touched.firstName && errors.firstName}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <CustomInput
+                        fullWidth
+                        id="lastName"
+                        label="*Last Name"
+                        name="lastName"
+                        {...getFieldProps("lastName")}
+                        error={Boolean(touched.lastName && errors.lastName)}
+                        helperText={touched.lastName && errors.lastName}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={12}>
+                      <CustomInput
                         select
                         fullWidth
                         id="workerType"
@@ -135,20 +157,7 @@ export const CVform = () => {
                         {workerCategoryOptions}
                       </CustomInput>
                     </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <CustomInput
-                        fullWidth
-                        select
-                        id="experience"
-                        label="*Experience"
-                        name="experience"
-                        {...getFieldProps("experience")}
-                        error={Boolean(touched.experience && errors.experience)}
-                        helperText={touched.experience && errors.experience}
-                      >
-                        {workerExpOptions}
-                      </CustomInput>
-                    </Grid>
+
                     <Grid item xs={12} sm={12}>
                       <Field name="cvPdf">
                         {(props) => (

@@ -2,8 +2,8 @@ import axios from "axios";
 import { errorToast, successToast } from "../utils/utils";
 import { store } from "../Redux/store/store";
 export const axiosClient = axios.create();
-
-const baseUrl = "http://ec2-3-144-196-218.us-east-2.compute.amazonaws.com/";
+// http://ec2-3-144-196-218.us-east-2.compute.amazonaws.com/
+const baseUrl = "http://localhost:4000/";
 
 axiosClient.defaults.baseURL = baseUrl;
 
@@ -14,7 +14,7 @@ axiosClient.interceptors.request.use(function (config) {
 });
 axiosClient.interceptors.response.use(
   function (response) {
-    successToast("success");
+    successToast(response?.data?.message);
     return response;
   },
   function (error) {

@@ -8,11 +8,9 @@ import { PrivateRoute } from "./PrivateRoute/PrivateRoute";
 import "react-toastify/dist/ReactToastify.css";
 import { CustomToastContainer } from "./modules/common/components/CustomToastContainer";
 import { ErrorPage } from "./ErrorPage/ErrorPage";
-import { RecruiterList } from "./modules/Recruiter/RecruiterList/RecruiterList";
-import { WorkersList } from "./modules/Dashboard/components/workersList/WorkersList";
-
 import { Orders } from "./modules/Orders/Orders";
 import { Profile } from "./modules/Dashboard/components/Profile/Profile";
+import { SystemadminUsersList } from "./modules/Dashboard/components/workersList/SystemadminUsersList";
 function App() {
   return (
     <div>
@@ -87,7 +85,7 @@ function App() {
           path="/Recruiters"
           element={
             <PrivateRoute>
-              <RecruiterList />
+              <SystemadminUsersList role={"RECRUITER"} />
             </PrivateRoute>
           }
         />
@@ -96,7 +94,7 @@ function App() {
           path="/Workers"
           element={
             <PrivateRoute>
-              <WorkersList />
+              <SystemadminUsersList role={"WORKER"} />
             </PrivateRoute>
           }
         />

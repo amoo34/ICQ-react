@@ -1,7 +1,8 @@
 import { Box, Button, Chip, Grid, Paper, Zoom } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { postReq } from "../../../../Crud/Crud";
+import { UPDATEUSER } from "../../../../Crud/constsants";
+import { patchReq } from "../../../../Crud/Crud";
 import { btnStyles } from "../../../../Crud/styles";
 import {
   capitalizeFirstLetter,
@@ -160,7 +161,7 @@ export const Profile = () => {
                       let values = await dynamicObjectCreator(inputToEdit);
                       console.log(values, "valuesChecking");
                       if (Object?.keys(values)?.length) {
-                        postReq(`api/users/updateUser/${_id}`, {
+                        patchReq(`${UPDATEUSER}/${_id}`, {
                           ...values,
                         })
                           .then()

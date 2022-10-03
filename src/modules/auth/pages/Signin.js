@@ -19,7 +19,6 @@ import { getReqWithParams } from "../../../Crud/Crud";
 import { LOGIN } from "../../../Crud/constsants";
 import { useDispatch } from "react-redux";
 import { hadleLogin } from "../../../Redux/user/usr.actions";
-import { CustomModal } from "../../common/components/CustomModal";
 
 function Copyright(props) {
   return (
@@ -68,8 +67,6 @@ export default function SignInSide() {
           navigate("/home");
         })
         .catch();
-      dispatch(hadleLogin({ role: "ADMIN" }));
-      navigate("/home");
     },
   });
 
