@@ -20,7 +20,7 @@ export const workerExperienceOptions = [
   "2 Years",
   "2.5 Years",
 ];
-
+export const rowsPerPageArray = [5, 10, 25, 50];
 export const capitalizeFirstLetter = (str) => {
   let firstLetter = str?.charAt(0)?.toUpperCase();
   let string = str.slice(1, str?.length);
@@ -79,3 +79,17 @@ export const dynamicObjCreator = (obj) => {
   return objectToreturn;
 };
 export const history = createBrowserHistory();
+export const reduxValueChecker = (arr, searchKey, searchValue) => {
+  return arr.find((item) => item[searchKey] === searchValue);
+};
+export const dynamicObjectCreator = (obj) => {
+  if (obj) {
+    let ob = {};
+    for (const iterator in obj) {
+      if (obj[iterator]?.length > 0) {
+        ob = { ...ob, [iterator]: obj[iterator] };
+      }
+    }
+    return ob;
+  }
+};

@@ -1,2 +1,3 @@
 export const SAVEORDER = "SAVEORDER";
 export const DELETEFROMCART = "DELETEFROMCART";
+export const PAIDORDERS = "PAIDORDERS";

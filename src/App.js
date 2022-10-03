@@ -12,6 +12,7 @@ import { RecruiterList } from "./modules/Recruiter/RecruiterList/RecruiterList";
 import { WorkersList } from "./modules/Dashboard/components/workersList/WorkersList";
 
 import { Orders } from "./modules/Orders/Orders";
+import { Profile } from "./modules/Dashboard/components/Profile/Profile";
 function App() {
   return (
     <div>
@@ -59,7 +60,25 @@ function App() {
           path="/orders"
           element={
             <PrivateRoute>
-              <Orders />
+              <Orders isCart={true} />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          exact
+          path="/OrderedCv's"
+          element={
+            <PrivateRoute>
+              <Orders isCart={false} />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          exact
+          path="/profile"
+          element={
+            <PrivateRoute>
+              <Profile />
             </PrivateRoute>
           }
         />

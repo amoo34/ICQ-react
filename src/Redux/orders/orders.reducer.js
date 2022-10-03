@@ -1,9 +1,10 @@
 import { errorToast, successToast } from "../../utils/utils";
 import { LOGOUT } from "../user/user.types";
-import { DELETEFROMCART, SAVEORDER } from "./order.types";
+import { DELETEFROMCART, SAVEORDER, PAIDORDERS } from "./order.types";
 
 const initialState = {
   orders: [],
+  paidOrders: [],
 };
 export const orderReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -31,7 +32,6 @@ export const orderReducer = (state = initialState, action) => {
       let saveOrders = state?.orders?.filter((order) => {
         return order?._id !== action?.payLoad?._id;
       });
-      console.log(saveOrders, "filteredOrders");
       if (filteredOrders) {
         successToast("Item is successfully deleted!");
         return {
@@ -41,7 +41,12 @@ export const orderReducer = (state = initialState, action) => {
       } else {
         return { ...state };
       }
-
+    case PAIDORDERS:
+      return {
+        ...state,
+        paidOrders: [...state?.paidOrders, ...action.payLoad],
+        orders: [],
+      };
     case LOGOUT:
       return { ...initialState };
     default:

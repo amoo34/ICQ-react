@@ -13,16 +13,22 @@ import {
   Zoom,
   MenuItem,
   Tooltip,
+  Grid,
+  TableFooter,
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material";
-import { saveAs } from "file-saver";
+
 import { getReqWithParams } from "../../../../Crud/Crud";
 import { FILTERWORKERS } from "../../../../Crud/constsants";
-import { capitalizeFirstLetter } from "../../../../utils/utils";
+import {
+  capitalizeFirstLetter,
+  reduxValueChecker,
+} from "../../../../utils/utils";
 import DownloadForOfflineIcon from "@mui/icons-material/DownloadForOffline";
 import {
   btnStyles,
-  primaryColor,
+  primaryColorDark,
+  secondaryBtnStyles,
   secondaryColor,
 } from "../../../../Crud/styles";
 import { TableSuspenser } from "../../../common/components/TableSuspenser";
@@ -34,28 +40,43 @@ import GppMaybeIcon from "@mui/icons-material/GppMaybe";
 import { CustomInput } from "../../../common/components/CustomInputField";
 import { workerCategoryOptions } from "../../../common/components/WorkerOptions";
 import { saveOrder } from "../../../../Redux/orders/order.actions";
+import { CustomPagination } from "../../../common/components/CustomPagination";
 
 const theme = createTheme();
 export const WorkersList = () => {
-  const [filter, setFilter] = useState("");
   const [workers, setWorkers] = useState("");
+  const [pagination, setPagination] = useState({
+    page: 1,
+    recordsPerPage: 10,
+    filters: "",
+  });
   const dispatch = useDispatch();
   const { role } = useSelector((state) => state?.user?.user);
+  const { orders, paidOrders } = useSelector((state) => state?.orders);
   const filterWorkers = useCallback(() => {
-    setWorkers("loading");
-    let filtersObj = { filter: filter };
-    if (filter) {
-      getReqWithParams(FILTERWORKERS, `/?filters={}`)
+    let filtersObj = { filter: pagination?.filters };
+    console.log(
+      Object?.keys(filtersObj?.filter),
+      "filtersObj",
+      Object?.keys(filtersObj)
+    );
+    if (Object?.keys(filtersObj?.filter)?.length) {
+      setWorkers("loading");
+      getReqWithParams(
+        FILTERWORKERS,
+        `/?page=${pagination?.page}&recorsPerPage=${
+          pagination?.recordsPerPage
+        }&filters=${
+          Object?.keys(filtersObj)?.length ? JSON.stringify(filtersObj) : {}
+        }`
+      )
         .then((res) => {
           let { cv } = res?.data?.data;
-          let mappedCVs = cv.map((cv) => {
-            return { ...cv, checked: false };
-          });
-          setWorkers(mappedCVs);
+          setWorkers(cv);
         })
         .catch((e) => setWorkers("error"));
     }
-  }, [filter]);
+  }, [pagination?.filters, pagination?.page, pagination?.recordsPerPage]);
   useEffect(() => {
     filterWorkers();
   }, [filterWorkers]);
@@ -63,7 +84,7 @@ export const WorkersList = () => {
   const addToCart = (worker) => {
     dispatch(saveOrder(worker));
   };
-
+  console.log(pagination, "paginationChecking");
   return (
     <ThemeProvider theme={theme}>
       <Box
@@ -71,8 +92,10 @@ export const WorkersList = () => {
       >
         <Box sx={{ width: "50%" }}>
           <CustomInput
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
+            value={pagination?.filters}
+            onChange={(e) =>
+              setPagination((p) => ({ ...p, filters: e.target.value }))
+            }
             fullWidth
             label="Select Worker Type"
             select
@@ -84,21 +107,21 @@ export const WorkersList = () => {
       </Box>
 
       <Zoom
-        in={filter}
+        in={pagination?.filters}
         mountOnEnter
         unmountOnExit
         orientation="horizontal"
         timeout={500}
       >
-        <Box sx={{ mt: 5 }}>
-          <TableContainer component={Paper}>
+        <Box sx={{ mt: 5 }} component={Paper}>
+          <TableContainer>
             <Table hover>
               <TableHead>
                 <TableRow>
                   <CustomTabelCell>First Name</CustomTabelCell>
                   <CustomTabelCell>Last Name</CustomTabelCell>
                   <CustomTabelCell>Category</CustomTabelCell>
-                  <CustomTabelCell>Experience</CustomTabelCell>
+                  {/* <CustomTabelCell>Experience</CustomTabelCell> */}
                   {role === "RECRUITER" && (
                     <CustomTabelCell>Add To Cart</CustomTabelCell>
                   )}
@@ -108,7 +131,15 @@ export const WorkersList = () => {
                 {typeof workers === "object" &&
                   workers?.length &&
                   workers?.map((worker) => {
-                    const { experience, workerType, userId, cvUrl } = worker;
+                    // const { experience, workerType, userId, cvUrl, _id } =
+                    //   worker;
+                    const { workerType, userId, _id } = worker;
+                    let hasInCart = reduxValueChecker(orders, "_id", _id);
+                    let hasInPaidCvs = reduxValueChecker(
+                      paidOrders,
+                      "_id",
+                      _id
+                    );
                     const { firstName, lastName } = userId;
                     return (
                       <Zoom
@@ -126,34 +157,56 @@ export const WorkersList = () => {
                           <TableCell key={Math.random()}>
                             {capitalizeFirstLetter(workerType)}
                           </TableCell>
-                          <TableCell key={Math.random()}>
+                          {/* <TableCell key={Math.random()}>
                             {experience}
-                          </TableCell>
+                          </TableCell> */}
                           {role === "RECRUITER" && (
                             <TableCell key={Math.random()}>
+                              {/* <Grid container>
+                                <Grid item xs={10} sm={10} md={8} lg={6} xl={5}> */}
                               <Button
+                                disabled={
+                                  hasInCart || hasInPaidCvs ? true : false
+                                }
                                 size="small"
                                 onClick={() => addToCart(worker)}
-                                sx={{ ...btnStyles }}
+                                sx={{
+                                  mt: 0.3,
+                                  ...(hasInCart
+                                    ? { ...secondaryBtnStyles }
+                                    : { ...btnStyles }),
+                                }}
                                 variant="contained"
                               >
-                                Add to Cart
+                                {hasInCart
+                                  ? "Added To Cart"
+                                  : hasInPaidCvs
+                                  ? "Paid"
+                                  : "Add To Cart"}
                               </Button>
-                              <Tooltip title="Download" arrow placement="top">
-                                <IconButton
-                                  onClick={() => {
-                                    var a = document.createElement("a");
-                                    a.href = cvUrl;
-                                    a.setAttribute("download", "Cv.pdf");
-                                    a.click();
-                                  }}
-                                  sx={{ ml: 2, color: secondaryColor }}
-                                >
-                                  <DownloadForOfflineIcon
-                                    sx={{ fontSize: "30px" }}
-                                  />
-                                </IconButton>
-                              </Tooltip>
+                              {/* </Grid> */}
+                              {/* <Grid item xs={2} sm={2} md={4} lg={6} xl={7}>
+                                  <Tooltip
+                                    title="Download CV"
+                                    arrow
+                                    placement="top"
+                                  >
+                                    <IconButton
+                                      onClick={() => {
+                                        var a = document.createElement("a");
+                                        a.href = cvUrl;
+                                        a.setAttribute("download", "Cv.pdf");
+                                        a.click();
+                                      }}
+                                      sx={{ color: secondaryColor }}
+                                    >
+                                      <DownloadForOfflineIcon
+                                        sx={{ fontSize: "22px" }}
+                                      />
+                                    </IconButton>
+                                  </Tooltip>{" "}
+                                </Grid> */}
+                              {/* </Grid> */}
                             </TableCell>
                           )}
                         </CustomTableRow>
@@ -162,20 +215,23 @@ export const WorkersList = () => {
                   })}
                 {typeof workers === "object" && !workers?.length && (
                   <TableRow>
-                    <TableCell sx={{ textAlign: "center" }} colSpan={4}>
+                    <TableCell
+                      sx={{ textAlign: "center" }}
+                      colSpan={role === "RECRUITER" ? 4 : 2}
+                    >
                       <Box>No Records!</Box>
                     </TableCell>
                   </TableRow>
                 )}
                 {workers === "loading" && (
                   <TableSuspenser
-                    col={role === "RECRUITER" ? 5 : 4}
+                    col={role === "RECRUITER" ? 4 : 3}
                     rows={10}
                   />
                 )}
                 {workers === "error" && (
                   <TableRow>
-                    <TableCell colSpan={role === "RECRUITER" ? 5 : 2}>
+                    <TableCell colSpan={role === "RECRUITER" ? 4 : 2}>
                       <Box sx={{ textAlign: "center" }}>
                         <GppMaybeIcon sx={{ color: "red" }} />
                       </Box>
@@ -185,6 +241,12 @@ export const WorkersList = () => {
               </TableBody>
             </Table>
           </TableContainer>
+          <Box sx={{ p: 2 }}>
+            <CustomPagination
+              pagination={pagination}
+              setPagination={setPagination}
+            />
+          </Box>
         </Box>
       </Zoom>
     </ThemeProvider>

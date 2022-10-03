@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -22,12 +22,38 @@ import {
 import { CustomInput } from "../../common/components/CustomInputField";
 import { Paper, Slide } from "@mui/material";
 import { btnStyles, secondaryColor } from "../../../Crud/styles";
+import { CustomToastContainer } from "../../common/components/CustomToastContainer";
+import { useConfirmation } from "../../Hooks/useConfirmation";
 
 const theme = createTheme();
 
 export const CVform = () => {
   const user = useSelector((state) => state?.user?.user);
-  console.log(user, "userConsole");
+  const valuesRef = useRef();
+  const [modal, setOpen] = useConfirmation({
+    modalTitle: "Payment",
+    modalContent: (
+      <>
+        You have successfully passed the correct information in order to upload
+        the CV you must have to pay 10$ !
+      </>
+    ),
+    actionProps: {
+      acceptText: "Pay",
+      rejectText: "Cancel",
+      actions: true,
+      onAccept: () =>
+        postReq(UPLOAD_CV, {
+          ...valuesRef.current,
+        })
+          .then(() => {
+            setOpen(false);
+          })
+          .catch(),
+      onReject: () => setOpen(false),
+    },
+  });
+  console.log(valuesRef.current, "okGettingIt");
   const { _id: userId } = user;
   const SignupSchema = Yup.object().shape({
     workerType: Yup.string().required("Worker Type is required"),
@@ -50,18 +76,15 @@ export const CVform = () => {
       let trimmedName = name?.replace(".pdf", "");
       console.log(name, "File");
       let base64File = await convertToBase64(cvPdf);
-
-      postReq(UPLOAD_CV, {
+      setOpen(true);
+      valuesRef.current = {
         ...values,
         cvPdf: base64File,
         cvPdfName: trimmedName?.replace(/\s/g, ""),
         userId: userId,
-      })
-        .then(() => {
-          resetForm();
-          document.getElementById("cvPdf").value = "";
-        })
-        .catch();
+      };
+      resetForm();
+      document.getElementById("cvPdf").value = "";
     },
   });
 
@@ -72,11 +95,13 @@ export const CVform = () => {
     getFieldProps,
     handleChange,
     setFieldValue,
-    setFieldError,
   } = formik;
   let hasMount = true;
+
   return (
     <ThemeProvider theme={theme}>
+      {modal}
+      <CustomToastContainer />
       <Container component="main" maxWidth="md">
         <Slide mountOnEnter unmountOnExit in={hasMount} timeout={500}>
           <Box component={Paper} sx={{ py: 3, px: 2, mt: 5 }}>

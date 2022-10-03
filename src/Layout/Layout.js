@@ -31,7 +31,8 @@ import { btnStyles, secondaryColor } from "../Crud/styles";
 import EmojiPeopleIcon from "@mui/icons-material/EmojiPeople";
 import { CustomBadge } from "../modules/common/components/CustomBadge";
 import { history } from "../utils/utils";
-
+import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
+import PersonPinIcon from "@mui/icons-material/PersonPin";
 const Copyright = (props) => {
   return (
     <Typography
@@ -99,7 +100,7 @@ const Drawer = styled(MuiDrawer, {
 }));
 export const Layout = ({ children }) => {
   const { role } = useSelector((state) => state?.user?.user);
-  const { orders } = useSelector((state) => state?.orders);
+  const { orders, paidOrders } = useSelector((state) => state?.orders);
   const dispatch = useDispatch();
   console.log(orders?.length, "roleComing");
   const [open, setOpen] = React.useState(false);
@@ -190,23 +191,60 @@ export const Layout = ({ children }) => {
                 </ListItemIcon>
                 <ListItemText primary="Dashboard" />
               </ListItemButton>
+              <ListItemButton
+                onClick={() => history.push("/profile")}
+                sx={{
+                  ...activeSideBarBackground(pathname, "/profile"),
+                }}
+              >
+                <ListItemIcon>
+                  <PersonPinIcon
+                    sx={{ ...activeSideBarColor(pathname, "/profile") }}
+                  />
+                </ListItemIcon>
+                <ListItemText primary="Profile" />
+              </ListItemButton>
               {role === "RECRUITER" && (
-                <ListItemButton
-                  onClick={() => history.push("/orders")}
-                  sx={{ ...activeSideBarBackground(pathname, "/orders") }}
-                >
-                  <ListItemIcon>
-                    <CustomBadge
-                      badgeContent={orders?.length ? orders?.length : "0"}
-                    >
-                      <ShoppingCartIcon
-                        sx={{ ...activeSideBarColor(pathname, "/orders") }}
-                      />
-                    </CustomBadge>
-                  </ListItemIcon>
+                <>
+                  <ListItemButton
+                    onClick={() => history.push("/orders")}
+                    sx={{ ...activeSideBarBackground(pathname, "/orders") }}
+                  >
+                    <ListItemIcon>
+                      <CustomBadge
+                        badgeContent={orders?.length ? orders?.length : "0"}
+                      >
+                        <ShoppingCartIcon
+                          sx={{ ...activeSideBarColor(pathname, "/orders") }}
+                        />
+                      </CustomBadge>
+                    </ListItemIcon>
 
-                  <ListItemText primary="Orders" />
-                </ListItemButton>
+                    <ListItemText primary="Orders" />
+                  </ListItemButton>
+                  <ListItemButton
+                    onClick={() => history.push("/OrderedCv's")}
+                    sx={{
+                      ...activeSideBarBackground(pathname, "/OrderedCv's"),
+                    }}
+                  >
+                    <ListItemIcon>
+                      <CustomBadge
+                        badgeContent={
+                          paidOrders?.length ? paidOrders?.length : "0"
+                        }
+                      >
+                        <ShoppingBasketIcon
+                          sx={{
+                            ...activeSideBarColor(pathname, "/OrderedCv's"),
+                          }}
+                        />
+                      </CustomBadge>
+                    </ListItemIcon>
+
+                    <ListItemText primary="Ordered Cv's" />
+                  </ListItemButton>
+                </>
               )}
               {role === "ADMIN" && (
                 <ListItemButton
