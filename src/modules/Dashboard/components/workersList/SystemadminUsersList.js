@@ -13,6 +13,7 @@ import {
   IconButton,
   Stack,
   Tooltip,
+  TableFooter,
 } from "@mui/material";
 import React, { useCallback, useState } from "react";
 import { useEffect } from "react";
@@ -26,9 +27,9 @@ import GppMaybeIcon from "@mui/icons-material/GppMaybe";
 import { FilterUsers } from "./FilterUsers";
 import CloseIcon from "@mui/icons-material/Close";
 import SearchIcon from "@mui/icons-material/Search";
+import { CustomPagination } from "../../../common/components/CustomPagination";
 
 export const SystemadminUsersList = ({ role }) => {
-  console.log(role, "roleChecking");
   const [users, setUsers] = useState("");
   const [openFilters, setOpenFilters] = useState(false);
   const [pagination, setPagination] = useState({
@@ -37,6 +38,8 @@ export const SystemadminUsersList = ({ role }) => {
     },
     page: 1,
     recordsPerPage: 10,
+    totalPages: 1,
+    totalRecords: 0,
     filterFlag: 0,
   });
   const { sort, page, recordsPerPage, filterFlag } = pagination;
@@ -54,7 +57,23 @@ export const SystemadminUsersList = ({ role }) => {
 
         setUsers("loading");
         getReqWithParams(LISTUSERS, params)
-          .then((res) => setUsers(res?.data?.data))
+          .then((res) => {
+            const { data, pager } = res?.data;
+            setUsers(data);
+
+            setPagination((p) => ({
+              ...p,
+              totalRecords: pager.totalRecords,
+            }));
+            if (Math.ceil(pager.totalRecords / pager.recordsPerPage)) {
+              setPagination((p) => ({
+                ...p,
+                totalPages: Math.ceil(
+                  pager.totalRecords / pager.recordsPerPage
+                ),
+              }));
+            }
+          })
           .catch((e) => setUsers("error"));
       }
     },
@@ -187,6 +206,16 @@ export const SystemadminUsersList = ({ role }) => {
               </TableRow>
             )}
           </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TableCell colSpan={5}>
+                <CustomPagination
+                  pagination={pagination}
+                  setPagination={setPagination}
+                />
+              </TableCell>
+            </TableRow>
+          </TableFooter>
         </Table>
       </TableContainer>
     </ThemeProvider>

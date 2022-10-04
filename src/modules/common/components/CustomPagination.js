@@ -1,19 +1,13 @@
-import {
-  Box,
-  Grid,
-  IconButton,
-  MenuItem,
-  TableCell,
-  TableFooter,
-  TableRow,
-} from "@mui/material";
+import { Box, Grid, IconButton, MenuItem } from "@mui/material";
 import React from "react";
 import { rowsPerPageArray } from "../../../utils/utils";
 import { CustomInput } from "./CustomInputField";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
+import KeyboardDoubleArrowLeftIcon from "@mui/icons-material/KeyboardDoubleArrowLeft";
+import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 export const CustomPagination = ({ setPagination, pagination }) => {
-  const { recordsPerPage, page } = pagination;
+  const { recordsPerPage, page, totalRecords, totalPages } = pagination;
   const onChangeHandler = (e, key) => {
     let { value } = e.target;
     setPagination((p) => ({ ...p, [key]: value }));
@@ -38,24 +32,43 @@ export const CustomPagination = ({ setPagination, pagination }) => {
               ))}
             </CustomInput>
           </Box>
-          <Box sx={{ width: "200px" }}>
+          <Box sx={{ ml: 1 }}>
             <IconButton
-              disabled={page === 1}
-              onClick={() => {
-                if (page !== 1) {
-                  setPagination((p) => ({ ...p, page: p?.page - 1 }));
-                }
-              }}
+              onClick={() => setPagination((p) => ({ ...p, page: 1 }))}
+              disabled={page !== 1 ? false : true}
+            >
+              <KeyboardDoubleArrowLeftIcon />
+            </IconButton>
+            <IconButton
+              disabled={page !== 1 ? false : true}
+              onClick={() =>
+                setPagination((p) => ({ ...p, page: p?.page - 1 }))
+              }
             >
               <NavigateBeforeIcon />
             </IconButton>
-            Page : {pagination?.page}
+            {page * recordsPerPage -
+              recordsPerPage +
+              1 +
+              "-" +
+              (page * recordsPerPage > totalRecords
+                ? totalRecords
+                : page * recordsPerPage) +
+              " of " +
+              totalRecords}
             <IconButton
+              disabled={page !== totalPages ? false : true}
               onClick={() =>
                 setPagination((p) => ({ ...p, page: p?.page + 1 }))
               }
             >
               <NavigateNextIcon />
+            </IconButton>
+            <IconButton
+              onClick={() => setPagination((p) => ({ ...p, page: totalPages }))}
+              disabled={page !== totalPages ? false : true}
+            >
+              <KeyboardDoubleArrowRightIcon />
             </IconButton>
           </Box>
         </Box>

@@ -11,6 +11,7 @@ import {
   Button,
   Zoom,
   MenuItem,
+  TableFooter,
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material";
 
@@ -39,31 +40,55 @@ export const WorkersList = () => {
   const [pagination, setPagination] = useState({
     page: 1,
     recordsPerPage: 10,
+    totalPages: 1,
+    totalRecords: 0,
     filters: {},
+    sort: {
+      createdAt: 1,
+    },
   });
   const dispatch = useDispatch();
   const { role } = useSelector((state) => state?.user?.user);
   const { orders, paidOrders } = useSelector((state) => state?.orders);
   const filterWorkers = useCallback(() => {
     let filtersObj = { ...pagination?.filters };
-    // console.log(filtersObj, "filtersObj", Object?.keys(filtersObj));
+    console.log(Object?.keys(filtersObj)?.length, "filtersObj");
     if (Object?.keys(filtersObj)?.length) {
       setWorkers("loading");
       getReqWithParams(
         FILTERWORKERS,
-        `/?page=${pagination?.page}&recorsPerPage=${
-          pagination?.recordsPerPage
-        }&filters=${
+        `/?page=${pagination?.page}&sort=${JSON.stringify({
+          ...pagination?.sort,
+        })}&recorsPerPage=${pagination?.recordsPerPage}&filters=${
           Object?.keys(filtersObj)?.length ? JSON.stringify(filtersObj) : {}
         }`
       )
         .then((res) => {
-          let { cv } = res?.data?.data;
-          setWorkers(cv);
+          let { data } = res?.data;
+          setWorkers(data);
+          setPagination((p) => ({
+            ...p,
+            totalRecords: data?.pager?.totalRecords,
+          }));
+          if (
+            Math.ceil(data?.pager?.totalRecords / data?.pager?.recordsPerPage)
+          ) {
+            setPagination((p) => ({
+              ...p,
+              totalPages: Math.ceil(
+                data?.pager?.totalRecords / data?.pager?.recordsPerPage
+              ),
+            }));
+          }
         })
         .catch((e) => setWorkers("error"));
     }
-  }, [pagination?.filters, pagination?.page, pagination?.recordsPerPage]);
+  }, [
+    pagination?.filters,
+    pagination?.page,
+    pagination?.recordsPerPage,
+    pagination.sort,
+  ]);
   useEffect(() => {
     filterWorkers();
   }, [filterWorkers]);
@@ -71,7 +96,6 @@ export const WorkersList = () => {
   const addToCart = (worker) => {
     dispatch(saveOrder(worker));
   };
-  console.log(pagination, "paginationChecking");
   return (
     <ThemeProvider theme={theme}>
       <Box
@@ -79,13 +103,14 @@ export const WorkersList = () => {
       >
         <Box sx={{ width: "50%" }}>
           <CustomInput
-            value={pagination?.filters}
-            onChange={(e) =>
+            value={pagination?.filters?.workerType}
+            onChange={(e) => {
+              let { value } = e.target;
               setPagination((p) => ({
                 ...p,
-                filters: { workerType: e.target.value },
-              }))
-            }
+                filters: value ? { workerType: value } : "",
+              }));
+            }}
             fullWidth
             label="Select Worker Type"
             select
@@ -229,14 +254,18 @@ export const WorkersList = () => {
                   </TableRow>
                 )}
               </TableBody>
+              <TableFooter>
+                <TableRow>
+                  <TableCell colSpan={4}>
+                    <CustomPagination
+                      pagination={pagination}
+                      setPagination={setPagination}
+                    />
+                  </TableCell>
+                </TableRow>
+              </TableFooter>
             </Table>
           </TableContainer>
-          <Box sx={{ p: 2 }}>
-            <CustomPagination
-              pagination={pagination}
-              setPagination={setPagination}
-            />
-          </Box>
         </Box>
       </Zoom>
     </ThemeProvider>
