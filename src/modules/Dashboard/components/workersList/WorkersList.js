@@ -64,19 +64,17 @@ export const WorkersList = () => {
         }`
       )
         .then((res) => {
-          let { data } = res?.data;
+          let { data, pager } = res?.data;
           setWorkers(data);
           setPagination((p) => ({
             ...p,
-            totalRecords: data?.pager?.totalRecords,
+            totalRecords: pager?.totalRecords,
           }));
-          if (
-            Math.ceil(data?.pager?.totalRecords / data?.pager?.recordsPerPage)
-          ) {
+          if (Math.ceil(pager?.totalRecords / pager?.recordsPerPage)) {
             setPagination((p) => ({
               ...p,
               totalPages: Math.ceil(
-                data?.pager?.totalRecords / data?.pager?.recordsPerPage
+                pager?.totalRecords / pager?.recordsPerPage
               ),
             }));
           }

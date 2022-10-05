@@ -8,7 +8,7 @@ const baseUrl = "http://ec2-3-144-196-218.us-east-2.compute.amazonaws.com/";
 axiosClient.defaults.baseURL = baseUrl;
 
 axiosClient.interceptors.request.use(function (config) {
-  const token = store.getState?.user?.auth;
+  const token = store.getState()?.user?.auth;
   config.headers.Authorization = token ? `Bearer ${token}` : "";
   return config;
 });
